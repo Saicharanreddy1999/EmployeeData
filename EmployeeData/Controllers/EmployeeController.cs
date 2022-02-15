@@ -1,8 +1,6 @@
 ﻿using EmployeeData.Models;
 using EmployeeData.Services;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeData.Controllers
 {
@@ -11,52 +9,70 @@ namespace EmployeeData.Controllers
         private IEmployeeData db;
 
 
-
         public EmployeeController(IEmployeeData db)
         {
             this.db = db;
         }
-        [HttpGet("GetAll")]
-        public IEnumerable<Employee> GetAll()
-        {
-            return db.GetAll();
-        }
-        [HttpGet("Get")]
-        public Employee Get(int EmpId)
+
+
+
+        [HttpGet("GetAllEmployees")]
+        public IEnumerable<Employee> GetAllEmployees()
         {
             
-           var e=db.Get(EmpId);
-           if(e!=null)
-            return e;
-           else
-                return new Employee();
+            return db.GetAllEmployees();
         }
+
+
+
+        [HttpGet("GetEmployee")]
+        public EmployeeDept GetEmployee(int EmpId)
+        {
+            
+           var e=db.GetEmployee(EmpId);
+             if(e!=null)
+            return e;
+            else
+               return new EmployeeDept();
+        }
+
+
+
         [HttpPost("AddEmployee")]
         public IActionResult AddEmployee(Employee employee)
         {
             if (ModelState.IsValid)
             {
-                db.Add(employee);
-                return Content("Successfully Added");
+                return Content(db.AddEmployee(employee));
+               
             }
             return Content("Fail");
 ;        }
+
+
+
         [HttpPost("DeleteEmployee")]
         public IActionResult DeleteEmployee(int EmpId)
         {
             
-            return Content(db.Delete(EmpId));
+            return Content(db.DeleteEmployee(EmpId));
         }
+
+
+
         [HttpPost("EditEmployee")]
         public IActionResult EditEmployee(Employee Emp)
         {
-            db.Update(Emp);
+            db.EditEmployee(Emp);
             return Content("Success");
         }
+
+
+
         [HttpPost("EditEmployeeId")]
         public IActionResult EditEmployeeId(int OldEmpID, int NewEmpID)
         {
-            return Content(db.EditId(OldEmpID, NewEmpID));
+            return Content(db.EditEmployeeId(OldEmpID, NewEmpID));
         }
 
         

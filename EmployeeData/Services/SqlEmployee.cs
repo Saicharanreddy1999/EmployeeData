@@ -6,26 +6,35 @@ namespace EmployeeData.Services
     public class SqlEmployee : IEmployeeData
     {
         private EmployeeDbContext db;
-        public List<Employee> employees;
+       
 
         public SqlEmployee(EmployeeDbContext db)
         {
             this.db = db;
         }
-        public void Add(Employee employee)
+
+
+
+        public string AddEmployee(Employee employee)
         {
 
             using(var data=new EmployeeDbContext())
             {
                 data.Database.EnsureCreated();
+                if (db.Department.Find(employee.DeptId) == null)
+                {
+                    return "Add Department "+employee.DeptId+" First";   
+                }
                 db.Employees.Add(employee);
             }
-
-               // db.Employees.Add(employee);
             db.SaveChanges();
+            return "Successfully Added";
             
         }
-        public string Delete(int EmpId)
+
+
+
+        public string DeleteEmployee(int EmpId)
         {
             var emp = db.Employees.Find(EmpId);
             if (emp != null)
@@ -36,26 +45,38 @@ namespace EmployeeData.Services
             }
                 return "Not Found";
         }
+        
 
-        public Employee Get(int EmpId)
+
+
+        public EmployeeDept GetEmployee(int EmpId)
         {
 
-            return db.Employees.Find(EmpId);
+            var emp = db.Employees.Find(EmpId);
+            var dept=db.Department.Find(emp.DeptId);
+            return new EmployeeDept(emp,dept);
+
         }
 
-        public IEnumerable<Employee> GetAll()
+
+
+        public IEnumerable<Employee> GetAllEmployees()
         {
             return from e in db.Employees orderby e.EmpId select e;
         }
 
-        public void Update(Employee employee)
+
+
+        public void EditEmployee(Employee employee)
         {
             var entry = db.Entry(employee);
             entry.State=EntityState.Modified;
             db.SaveChanges();
         }
 
-        public string EditId(int OldEmpId, int NewEmpID)
+
+
+        public string EditEmployeeId(int OldEmpId, int NewEmpID)
         {
             var emp = db.Employees.Find(OldEmpId);
             if(emp!=null)
@@ -72,5 +93,6 @@ namespace EmployeeData.Services
                 }
             return "Not Found";
         }
+
     }
 }
